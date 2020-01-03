@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    table, th, td {
+      border: 1px solid black;
+  }
+  th{
+    text-align: center;
+}
+button{
+    border: none;
+    color: whitesmoke;
+    text-transform: capitalize;
+    font-weight: bold;
+    padding: 4px 8px;
+}
+</style>
+<body>
+
+
+    <div class="container mt-3">
+        <h1 class="text-uppercase mb-4 text-primary text-center">Thông tin Ve may bay</h1>
+        <table style="width:100%" class="mt-3 text-center">
+            <thead>
+                <tr>
+                    <th>Mã vé</th>
+                    <th>Nơi đi</th>
+                    <th>Nơi đến</th>
+                    <th>Ngày đi</th>
+                    <th>Giờ đi</th>
+                    <th>Giờ đến</th>
+                    <th>Giá tiền</th>
+                    <th>Time GO</th>
+                </tr>
+            </thead>
+            <tbody id="show">
+            </tbody>
+        </table>
+        <br>
+        <label class="text-capitalize mr-5 font-weight-bold">Nhập noi di:</label>
+        <input type="text" id="ndi" class="mr-4">
+        <br>
+        <label class="text-capitalize mr-5 font-weight-bold">Nhập noi den:</label>
+        <input type="text" id="nden" class="mr-4">
+        <br>
+        <label class="text-capitalize mr-5 font-weight-bold">Nhập ngay di:</label>
+        <input type="text" id="ngdi" class="mr-4">
+        <button id="getThueXe" class="bg-primary"> Get</button>
+        <br>
+        <button id="getAsc" class="bg-primary"> SortAscTien</button>
+        <button id="getDes" class="bg-primary"> SortDesTien</button>
+        <br>
+        <br>
+        <button id="getAscH" class="bg-primary"> SortAscGioDi</button>
+        <button id="getDesH" class="bg-primary"> SortDesGioDi</button>
+        <br>
+        <br>
+    </div>
+    <!-- Get ALL -->
+    <script>
+        var request = new XMLHttpRequest()
+        let load = ''
+        var show = document.getElementById("show");
+        request.open('GET', 'http://localhost:8080/getall', true)
+        request.onload = function () {
+            var data = JSON.parse(this.response)
+            console.log(data);
+            let load = ''
+            if (request.status >= 200 && request.status < 400) {
+                data.forEach(check => {
+                    load += `<tr>
+                    <th>${check.maVe}</th>
+                    <th>${check.noiDi}</th>
+                    <th>${check.noiDen}</th>
+                    <th>${check.ngayDi}</th>
+                    <th>${check.gioDi}</th>
+                    <th>${check.gioDen}</th>
+                    <th>${check.giaTien}</th>
+                    <th>${check.soGhe}</th>
+                    <th>${check.tgDi}</th>
+                    </tr>`
+                })
+            } else {
+                console.log('error')
+            }
+            show.innerHTML = load;
+        }
+        request.send()
+    </script>
+    <!-- 2.a Tìm vé theo nơi đi nơi đến -->
+    <script>
+        $(document).ready(function () {
+
+            $("#getThueXe").click(function () {
+                var show = document.getElementById("show");
+                $.ajax({ url: "http://localhost:8080/search?noiDi=" + $("#ndi").val()+"&noiDen="+ $("#nden").val()},true)
+                .then(function (data) {
+                    for (let i=0; i < data.length; i++) {
+                       load += `<tr>
+                       <th>${data[i].maVe}</th>
+                       <th>${data[i].noiDi}</th>
+                       <th>${data[i].noiDen}</th>
+                       <th>${data[i].ngayDi}</th>
+                       <th>${data[i].gioDi}</th>
+                       <th>${data[i].gioDen}</th>
+                       <th>${data[i].giaTien}</th>
+                       <th>${data[i].tgDi}</th>
+                       </tr>`
+                       show.innerHTML = load;
+                   }
+
+               });
+            });
+            
+        });
+    </script>
+    
+
+</body>
+
+</html>
